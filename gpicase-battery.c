@@ -11,7 +11,7 @@ static const int reqIntLen=20;
 static const int endpoint_Int_in=0x81; /* endpoint 0x81 address for IN */
 static const int endpoint_Int_out=0x01; /* endpoint 1 address for OUT */
 
-static const int timeout=5000; /* timeout in ms */
+static const int timeout=2000; /* timeout in ms */
  
 void bad(const char *why) {
      fprintf(stderr,"Fatal error> %s\n",why);
@@ -80,7 +80,8 @@ usb_dev_handle * find_lvr_hid()
 void Write_RumbleData(usb_dev_handle *dev,uint8_t left,uint8_t right)
 {
      int r;
-     uint8_t buffer[8];
+     //uint8_t buffer[8];
+     char buffer[8];
      memset(buffer,0,sizeof(buffer));
      buffer[1] = 0x08;
      buffer[3] = left;
