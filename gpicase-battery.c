@@ -37,8 +37,10 @@ usb_dev_handle* setup_libusb_access()
  
   printf("usb_get_driver_np\n");
   retval = usb_get_driver_np(lvr_hid, 0, dname, 31);
+  printf("usb_get_driver_np error is : %d \r\n",retval);
   if (!retval){
-       usb_detach_kernel_driver_np(lvr_hid, 0);
+       retval = usb_detach_kernel_driver_np(lvr_hid, 0);
+       printf("usb_detach_kernel_driver_np is : %d \r\n",retval);
   }
   printf("dname is : %s\n",dname);
  
@@ -137,6 +139,9 @@ int main()
      } 
 
      Get_VoltagePercent(lvr_hid);
+     //ret = usb_clear_halt(lvr_hid, unsigned int ep);
+     ret = usb_reset(lvr_hid);
+     printf("usb_reset error is : %d \r\n",ret);
      ret = usb_release_interface(lvr_hid, INTERFACE);
      printf("usb_release_interface error is : %d \r\n",ret);
      ret = usb_close(lvr_hid);
