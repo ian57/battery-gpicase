@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra 
 LDFLAGS = -I/usr/local -L/usr/local
 LIBS = -lusb
-PROJET = battery-gpicase
+PROJET = gpicase-battery
 $(PROJET): $(PROJET).c
 	$(CC) $(CFLAGS) -o $(PROJET) $(PROJET).c $(LDFLAGS)  $(LIBS)
 clean:
