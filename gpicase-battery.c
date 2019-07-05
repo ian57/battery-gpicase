@@ -94,7 +94,7 @@ void Write_RumbleData(usb_dev_handle *dev,uint8_t left,uint8_t right)
 
 void Get_VoltagePercent(usb_dev_handle *dev)
 {
-     uint8_t read_data[20];
+     char read_data[20];
      int r,i;
      memset(read_data,0,sizeof(read_data));
      Write_RumbleData(dev,0x01,0x00);
