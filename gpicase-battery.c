@@ -17,9 +17,9 @@ void bad(const char *why) {
      fprintf(stderr,"Fatal error> %s\n",why);
      exit(17);
 }
- 
+
 usb_dev_handle *find_lvr_hid();
- 
+
 usb_dev_handle* setup_libusb_access() 
 {
   usb_dev_handle *lvr_hid;
@@ -29,7 +29,7 @@ usb_dev_handle* setup_libusb_access()
   usb_init();
   usb_find_busses();
   usb_find_devices();
-          
+
   if(!(lvr_hid = find_lvr_hid())) {
        printf("Couldn't find the USB device, Exiting\n");
        return NULL;
@@ -131,13 +131,16 @@ void Get_VoltagePercent(usb_dev_handle *dev)
 int main()
 {
      usb_dev_handle *lvr_hid;
+     int ret=0;
      if ((lvr_hid = setup_libusb_access()) == NULL) {
           exit(-1);
      } 
 
      Get_VoltagePercent(lvr_hid);
-     usb_release_interface(lvr_hid, INTERFACE);
-     usb_close(lvr_hid);
+     ret = usb_release_interface(lvr_hid, INTERFACE);
+     printf("usb_release_interface error is : %d \r\n",ret);
+     ret = usb_close(lvr_hid);
+     printf("usb_close error is : %d \r\n",ret);
 
-     return 0;
+     return ret;
 }
