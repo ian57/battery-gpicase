@@ -136,6 +136,7 @@ int main()
      } 
 
      Get_VoltagePercent(lvr_hid);
+     usb_release_interface(lvr_hid, INTERFACE);
      usb_close(lvr_hid);
 
      return 0;
