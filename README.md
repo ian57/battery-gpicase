@@ -1,2 +1,2 @@
 # gpicase-battery
-a small programm to get the battery level on gpicase
+a small program to get the battery level on gpicase
