@@ -2,85 +2,82 @@
 #include <stdio.h>
 #include <string.h>
 
- #define VERSION "0.1.0"
- #define VENDOR_ID 0x045E
- #define PRODUCT_ID 0x028E
- #define INTERFACE 0
- const static int reqIntLen=20;
- const static int endpoint_Int_in=0x81; /* endpoint 0x81 address for IN */
- const static int endpoint_Int_out=0x01; /* endpoint 1 address for OUT */
+#define VERSION "0.1.0"
+#define VENDOR_ID 0x045E
+#define PRODUCT_ID 0x028E
+#define INTERFACE 0
+
+static const int reqIntLen=20;
+static const int endpoint_Int_in=0x81; /* endpoint 0x81 address for IN */
+static const int endpoint_Int_out=0x01; /* endpoint 1 address for OUT */
+
+static const int timeout=5000; /* timeout in ms */
  
- const static int timeout=5000; /* timeout in ms */
- 
- void bad(const char *why) 
- {
+void bad(const char *why) {
      fprintf(stderr,"Fatal error> %s\n",why);
      exit(17);
- }
+}
  
- usb_dev_handle *find_lvr_hid();
+usb_dev_handle *find_lvr_hid();
  
- usb_dev_handle* setup_libusb_access() 
- {
-     usb_dev_handle *lvr_hid;
-     int retval;
-     char dname[32] = {0};
-     usb_set_debug(255);
-     usb_init();
-     usb_find_busses();
-     usb_find_devices();
-             
-     if(!(lvr_hid = find_lvr_hid())) {
-          printf("Couldn't find the USB device, Exiting\n");
-          return NULL;
-     }
+usb_dev_handle* setup_libusb_access() 
+{
+  usb_dev_handle *lvr_hid;
+  int retval;
+  char dname[32] = {0};
+  usb_set_debug(255);
+  usb_init();
+  usb_find_busses();
+  usb_find_devices();
+          
+  if(!(lvr_hid = find_lvr_hid())) {
+       printf("Couldn't find the USB device, Exiting\n");
+       return NULL;
+   }
  
-     printf("usb_get_driver_np\n");
-     retval = usb_get_driver_np(lvr_hid, 0, dname, 31);
-     if (!retval){
-          usb_detach_kernel_driver_np(lvr_hid, 0);
-     }
-     printf("dname is : %s\n",dname);
+  printf("usb_get_driver_np\n");
+  retval = usb_get_driver_np(lvr_hid, 0, dname, 31);
+  if (!retval){
+       usb_detach_kernel_driver_np(lvr_hid, 0);
+  }
+  printf("dname is : %s\n",dname);
  
-     retval=usb_set_configuration(lvr_hid, 1);
-     if ( retval < 0) {
-          printf("Could not set configuration 1 : %d\n", retval);
-          return NULL;
-     }
-     retval = retval=usb_claim_interface(lvr_hid, INTERFACE);
-     if ( retval < 0) {
-          printf("Could not claim interface: %d\n", retval);
-          return NULL;
-     }
-     return lvr_hid;
- }
+  retval=usb_set_configuration(lvr_hid, 1);
+  if ( retval < 0) {
+       printf("Could not set configuration 1 : %d\n", retval);
+       return NULL;
+  }
+  retval=usb_claim_interface(lvr_hid, INTERFACE);
+  if ( retval < 0) {
+       printf("Could not claim interface: %d\n", retval);
+       return NULL;
+  }
+  return lvr_hid;
+}
  
- usb_dev_handle * find_lvr_hid() 
- {
-     struct usb_bus *bus;
-     struct usb_device *dev;
- 
-     for (bus = usb_get_busses(); bus; bus = bus->next)
-     {
-          for (dev = bus->devices; dev; dev = dev->next) 
-          {
-               //printf("Next hid with Vendor Id: %x and Product Id: %x.\n", dev->descriptor.idVendor, dev->descriptor.idProduct);
-               if (dev->descriptor.idVendor == VENDOR_ID &&  dev->descriptor.idProduct == PRODUCT_ID ) {
-                    usb_dev_handle *handle;
-                    printf("lvr_hid with Vendor Id: %x and Product Id: %x found.\n", VENDOR_ID, PRODUCT_ID);
-                    if (!(handle = usb_open(dev))) {
-                         printf("Could not open USB device\n");
-                         return NULL;
-                    }
-                    return handle;
+usb_dev_handle * find_lvr_hid() 
+{
+  struct usb_bus *bus;
+  struct usb_device *dev;
+
+  for (bus = usb_get_busses(); bus; bus = bus->next){
+      for (dev = bus->devices; dev; dev = dev->next) {
+          //printf("Next hid with Vendor Id: %x and Product Id: %x.\n", dev->descriptor.idVendor, dev->descriptor.idProduct);
+          if (dev->descriptor.idVendor == VENDOR_ID &&  dev->descriptor.idProduct == PRODUCT_ID ) {
+             usb_dev_handle *handle;
+             printf("lvr_hid with Vendor Id: %x and Product Id: %x found.\n", VENDOR_ID, PRODUCT_ID);
+             if (!(handle = usb_open(dev))) {
+                    printf("Could not open USB device\n");
+                    return NULL;
                }
-     
+               return handle;
           }
      }
-     return NULL;
  }
+ return NULL;
+}
  
-void Wirte_RumbleData(usb_dev_handle *dev,uint8_t left,uint8_t right)
+void Write_RumbleData(usb_dev_handle *dev,uint8_t left,uint8_t right)
 {
      int r,i;
      uint8_t buffer[8];
@@ -97,12 +94,12 @@ void Wirte_RumbleData(usb_dev_handle *dev,uint8_t left,uint8_t right)
 void Get_VoltagePercent(usb_dev_handle *dev)
 {
      uint8_t read_data[20];
-     int r,i;
+     int r;
      memset(read_data,0,sizeof(read_data));
-     Wirte_RumbleData(dev,0x01,0x00);
-     Wirte_RumbleData(dev,0x00,0x01);
-     Wirte_RumbleData(dev,0x01,0x01);
-     Wirte_RumbleData(dev,0x00,0x00);
+     Write_RumbleData(dev,0x01,0x00);
+     Write_RumbleData(dev,0x00,0x01);
+     Write_RumbleData(dev,0x01,0x01);
+     Write_RumbleData(dev,0x00,0x00);
 //     do{
           r = usb_interrupt_read(dev, endpoint_Int_in, read_data, reqIntLen, timeout);
           if( r != reqIntLen ){
@@ -129,7 +126,8 @@ void Get_VoltagePercent(usb_dev_handle *dev)
 //     }while(1);
 }
  
-int main( int argc, char **argv)
+//int main( int argc, char **argv)
+int main()
 {
      usb_dev_handle *lvr_hid;
      if ((lvr_hid = setup_libusb_access()) == NULL) {
@@ -140,6 +138,4 @@ int main( int argc, char **argv)
      usb_close(lvr_hid);
 
      return 0;
- }
- 
- 
+}
