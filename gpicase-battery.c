@@ -79,7 +79,7 @@ usb_dev_handle * find_lvr_hid()
  
 void Write_RumbleData(usb_dev_handle *dev,uint8_t left,uint8_t right)
 {
-     int r,i;
+     int r;
      uint8_t buffer[8];
      memset(buffer,0,sizeof(buffer));
      buffer[1] = 0x08;
@@ -94,7 +94,7 @@ void Write_RumbleData(usb_dev_handle *dev,uint8_t left,uint8_t right)
 void Get_VoltagePercent(usb_dev_handle *dev)
 {
      uint8_t read_data[20];
-     int r;
+     int r,i;
      memset(read_data,0,sizeof(read_data));
      Write_RumbleData(dev,0x01,0x00);
      Write_RumbleData(dev,0x00,0x01);
